@@ -1,22 +1,24 @@
-# Use a mesma imagem base Python
+# Etapa base: imagem leve do Python
 FROM python:3.11-slim
 
-# Define o diretório de trabalho dentro do container
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Copia os requirements
+# Copia os arquivos necessários
 COPY requirements.txt .
 
-# Instala apenas as dependências do Frontend (streamlit, pandas, requests)
-# Mantemos o mesmo requirements.txt por simplicidade, mas o ideal seria separar.
+# Instala as dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia a pasta 'frontend' e 'config' (para o config.py)
-COPY frontend /app/frontend
-COPY config /app/config
+# Copia todo o código-fonte (frontend)
+COPY frontend/ /app
 
-# Porta padrão do Streamlit
+# Expõe a porta padrão do Streamlit
 EXPOSE 8501
 
-# Comando para iniciar o Streamlit
-CMD ["streamlit", "run", "frontend/app.py", "--server.port", "8501", "--server.enableCORS", "false", "--server.headless", "true"]
+# Define variáveis padrão (importante para o EasyPanel)
+ENV STREAMLIT_SERVER_PORT=8501
+ENV STREAMLIT_SERVER_ADDRESS=0.0.0.0
+
+# Comando para rodar o app Streamlit
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
