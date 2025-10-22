@@ -1,0 +1,23 @@
+# Use uma imagem base Python otimizada
+FROM python:3.11-slim
+
+# Define o diretório de trabalho dentro do container
+WORKDIR /app
+
+# Copia apenas o requirements para aproveitar o cache do Docker
+COPY requirements.txt .
+
+# Instala as dependências (incluindo as de DB e Gunicorn)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia todo o código-fonte
+COPY . /app
+
+# Garante que o .env esteja presente (embora o Easypanel injete as variáveis)
+COPY config/.env /app/config/.env
+
+# Porta que o Gunicorn irá escutar dentro do container
+EXPOSE 8000
+
+# Comando para iniciar o servidor Gunicorn (4 workers para alta performance)
+CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "src.backend_api:app", "--bind", "0.0.0.0:8000"]
