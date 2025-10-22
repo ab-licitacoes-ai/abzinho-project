@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app
 
 # Garante que o .env esteja presente (embora o Easypanel injete as variáveis)
-COPY config/.env /app/config/.env
+CCOPY .env /app/.env
 
 # Porta que o Gunicorn irá escutar dentro do container
 EXPOSE 8000
