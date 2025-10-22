@@ -11,6 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copia todo o código-fonte
+# Este comando copia as pastas 'src', 'config', etc. para /app
 COPY . /app
 
 # Garante que o .env esteja presente (embora o Easypanel injete as variáveis)
@@ -19,5 +20,5 @@ COPY config/.env /app/config/.env
 # Porta que o Gunicorn irá escutar dentro do container
 EXPOSE 8000
 
-# Comando para iniciar o servidor Gunicorn (4 workers para alta performance)
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "src.backend_api:app", "--bind", "0.0.0.0:8000"]
+# CORREÇÃO: Usar --chdir /app para garantir que Gunicorn encontre o módulo 'src'.
+CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--chdir", "/app", "src.backend_api:app", "--bind", "0.0.0.0:8000"]
